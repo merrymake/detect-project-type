@@ -1,0 +1,27 @@
+{
+  "name": "@merrymake/detect-project-type",
+  "version": "1.4.2",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mist-cloud-eu/project-type-detect.git"
+  },
+  "dependencies": {},
+  "bugs": {
+    "url": "https://github.com/mist-cloud-eu/project-type-detect/issues"
+  },
+  "homepage": "https://github.com/mist-cloud-eu/project-type-detect#readme",
+  "devDependencies": {
+    "@types/node": "^16.11.11"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
