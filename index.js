@@ -21,7 +21,8 @@ function detectProjectType(folder) {
         return "maven";
     if (files.includes(`requirements.txt`) ||
         files.includes(`setup.py`) ||
-        files.includes(`Pipfile`))
+        files.includes(`Pipfile`) ||
+        files.includes(`pyproject.toml`))
         return "python";
     if (files.includes(`composer.json`) || files.includes(`index.php`))
         return "php";
@@ -81,6 +82,9 @@ function rustRunCommand(folder) {
         return `./target/release/app.exe`;
     throw `Missing executable: /target/release/app`;
 }
+function pythonRunCommand(folder) {
+    return ". merrymake-env/bin/activate && python3 *.py";
+}
 exports.RUN_COMMAND = {
     docker: () => {
         throw "Custom dockerfiles are not supported";
@@ -91,9 +95,7 @@ exports.RUN_COMMAND = {
     maven: () => {
         throw "Maven support is coming soon";
     },
-    python: () => {
-        throw "Python support is coming soon";
-    },
+    python: pythonRunCommand,
     php: () => {
         throw "Php support is coming soon";
     },
@@ -151,6 +153,11 @@ function csharpBuild(folder) {
     buildCommands.push(`dotnet build --nologo -v q --property WarningLevel=0 /clp:ErrorsOnly`);
     return buildCommands;
 }
+function pythonBuild(folder) {
+    let buildCommands = [];
+    buildCommands.push(`python3 -m venv merrymake-env && . merrymake-env/bin/activate && pip3 install -r requirements.txt`);
+    return buildCommands;
+}
 exports.BUILD_SCRIPT_MAKERS = {
     docker: () => {
         throw "Custom dockerfiles are not supported";
@@ -161,9 +168,7 @@ exports.BUILD_SCRIPT_MAKERS = {
     maven: () => {
         throw "Maven support is coming soon";
     },
-    python: () => {
-        throw "Python support is coming soon";
-    },
+    python: pythonBuild,
     php: () => {
         throw "Php support is coming soon";
     },

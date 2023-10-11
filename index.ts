@@ -28,7 +28,8 @@ export function detectProjectType(folder: string): ProjectType {
   if (
     files.includes(`requirements.txt`) ||
     files.includes(`setup.py`) ||
-    files.includes(`Pipfile`)
+    files.includes(`Pipfile`) ||
+    files.includes(`pyproject.toml`)
   )
     return "python";
   if (files.includes(`composer.json`) || files.includes(`index.php`))
@@ -89,6 +90,10 @@ function rustRunCommand(folder: string) {
   throw `Missing executable: /target/release/app`;
 }
 
+function pythonRunCommand(folder: string) {
+  return ". merrymake-env/bin/activate && python3 *.py";
+}
+
 export const RUN_COMMAND: {
   [projectType in ProjectType]: (folder: string) => string;
 } = {
@@ -101,9 +106,7 @@ export const RUN_COMMAND: {
   maven: () => {
     throw "Maven support is coming soon";
   },
-  python: () => {
-    throw "Python support is coming soon";
-  },
+  python: pythonRunCommand,
   php: () => {
     throw "Php support is coming soon";
   },
@@ -176,6 +179,14 @@ function csharpBuild(folder: string) {
   return buildCommands;
 }
 
+function pythonBuild(folder: string) {
+  let buildCommands: string[] = [];
+  buildCommands.push(
+    `python3 -m venv merrymake-env && . merrymake-env/bin/activate && pip3 install -r requirements.txt`
+  );
+  return buildCommands;
+}
+
 export const BUILD_SCRIPT_MAKERS: {
   [projectType in ProjectType]: (folder: string) => string[];
 } = {
@@ -188,9 +199,7 @@ export const BUILD_SCRIPT_MAKERS: {
   maven: () => {
     throw "Maven support is coming soon";
   },
-  python: () => {
-    throw "Python support is coming soon";
-  },
+  python: pythonBuild,
   php: () => {
     throw "Php support is coming soon";
   },
