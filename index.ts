@@ -91,7 +91,7 @@ function rustRunCommand(folder: string) {
 }
 
 function pythonRunCommand(folder: string) {
-  return ". merrymake-env/bin/activate && python3 *.py";
+  return ". merrymake-env/**/activate && python *.py";
 }
 
 export const RUN_COMMAND: {
@@ -182,7 +182,7 @@ function csharpBuild(folder: string) {
 function pythonBuild(folder: string) {
   let buildCommands: string[] = [];
   buildCommands.push(
-    `python3 -m venv merrymake-env && . merrymake-env/bin/activate && pip3 install -r requirements.txt`
+    `python -m venv merrymake-env && . merrymake-env/**/activate && pip install -r requirements.txt`
   );
   return buildCommands;
 }
