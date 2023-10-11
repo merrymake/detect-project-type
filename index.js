@@ -83,7 +83,7 @@ function rustRunCommand(folder) {
     throw `Missing executable: /target/release/app`;
 }
 function pythonRunCommand(folder) {
-    return ". merrymake-env/bin/activate && python3 *.py";
+    return ". merrymake-env/**/activate && python *.py";
 }
 exports.RUN_COMMAND = {
     docker: () => {
@@ -155,7 +155,7 @@ function csharpBuild(folder) {
 }
 function pythonBuild(folder) {
     let buildCommands = [];
-    buildCommands.push(`python3 -m venv merrymake-env && . merrymake-env/bin/activate && pip3 install -r requirements.txt`);
+    buildCommands.push(`python -m venv merrymake-env && . merrymake-env/**/activate && pip install -r requirements.txt`);
     return buildCommands;
 }
 exports.BUILD_SCRIPT_MAKERS = {
