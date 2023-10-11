@@ -91,7 +91,11 @@ function rustRunCommand(folder: string) {
 }
 
 function pythonRunCommand(folder: string) {
-  return ". merrymake-env/**/activate && python3 *.py";
+  if (fs.existsSync(`${folder}/merrymake-env/bin`))
+    return 'PATH="$(pwd)/merrymake-env/bin:$PATH" python3 *.py';
+  else if (fs.existsSync(`${folder}/merrymake-env/Scripts`))
+    return 'PATH="$(pwd)/merrymake-env/Scripts:$PATH" python3 *.py';
+  throw `Missing virtual environment: /merrymake-env`;
 }
 
 export const RUN_COMMAND: {

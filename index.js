@@ -83,7 +83,11 @@ function rustRunCommand(folder) {
     throw `Missing executable: /target/release/app`;
 }
 function pythonRunCommand(folder) {
-    return ". merrymake-env/**/activate && python3 *.py";
+    if (fs_1.default.existsSync(`${folder}/merrymake-env/bin`))
+        return 'PATH="$(pwd)/merrymake-env/bin:$PATH" python3 *.py';
+    else if (fs_1.default.existsSync(`${folder}/merrymake-env/Scripts`))
+        return 'PATH="$(pwd)/merrymake-env/Scripts:$PATH" python3 *.py';
+    throw `Missing virtual environment: /merrymake-env`;
 }
 exports.RUN_COMMAND = {
     docker: () => {
