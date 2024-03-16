@@ -91,10 +91,18 @@ function rustRunCommand(folder: string) {
 }
 
 function pythonRunCommand(folder: string) {
+  let appExists = fs.existsSync(`${folder}/app.py`);
+  let mainExists = fs.existsSync(`${folder}/main.py`);
+  let file: string;
+  if (appExists && mainExists)
+    throw `Cannot have both 'app.py' and 'main.py' in the root folder`;
+  else if (appExists) file = `app.py`;
+  else if (mainExists) file = `main.py`;
+  else throw `Missing 'app.py'`;
   if (fs.existsSync(`${folder}/merrymake-env/bin`))
-    return 'PATH="$(pwd)/merrymake-env/bin:$PATH" python3 *.py';
+    return `PATH="$(pwd)/merrymake-env/bin:$PATH" python3 ${file}`;
   else if (fs.existsSync(`${folder}/merrymake-env/Scripts`))
-    return 'PATH="$(pwd)/merrymake-env/Scripts:$PATH" python3 *.py';
+    return `PATH="$(pwd)/merrymake-env/Scripts:$PATH" python3 ${file}`;
   throw `Missing virtual environment: /merrymake-env`;
 }
 
