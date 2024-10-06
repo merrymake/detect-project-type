@@ -239,19 +239,19 @@ export function writeBuildScript(ptBuilder: (folder: string) => string[]) {
 }
 
 export const VERSION_CMD: {
-  [projectType in ProjectType]: string;
+  [projectType in ProjectType]: { [tool: string]: string };
 } = {
-  docker: "docker --version",
-  nodejs: "node --version",
-  typescript: "tsc --version",
-  gradle: "javac --version",
-  maven: "javac --version",
-  python: "pip3 --version",
-  php: "php --version",
-  scala: "scala-cli version",
-  clojure: "echo TODO",
-  ruby: "ruby --version",
-  csharp: "dotnet --version",
-  rust: "cargo --version",
-  go: "go version",
+  docker: { docker: "--version" },
+  nodejs: { npm: "--version", node: "--version" },
+  typescript: { tsc: "--version", npm: "--version", node: "--version" },
+  gradle: { javac: "--version" },
+  maven: { javac: "--version" },
+  python: { python3: "--version", pip: "--version" },
+  php: { php: "--version" },
+  scala: { "scala-cli": "version" },
+  clojure: {},
+  ruby: { ruby: "--version" },
+  csharp: { dotnet: "--version" },
+  rust: { cargo: "--version" },
+  go: { go: "version" },
 };
