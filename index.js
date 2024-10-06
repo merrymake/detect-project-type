@@ -138,7 +138,7 @@ function nodeJsBuild(typescript) {
     return (folder) => {
         var _a;
         let buildCommands = [];
-        buildCommands.push("NPM_CONFIG_UPDATE_NOTIFIER=false npm_config_loglevel=error npm ci");
+        buildCommands.push("NPM_CONFIG_UPDATE_NOTIFIER=false npm_config_loglevel=error npm --no-fund ci");
         if (typescript)
             buildCommands.push("tsc");
         let pkg = JSON.parse("" + fs_1.default.readFileSync(`${folder}/package.json`));

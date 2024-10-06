@@ -148,7 +148,7 @@ function nodeJsBuild(typescript: boolean) {
   return (folder: string) => {
     let buildCommands: string[] = [];
     buildCommands.push(
-      "NPM_CONFIG_UPDATE_NOTIFIER=false npm_config_loglevel=error npm ci"
+      "NPM_CONFIG_UPDATE_NOTIFIER=false npm_config_loglevel=error npm --no-fund ci"
     );
     if (typescript) buildCommands.push("tsc");
     let pkg: { scripts?: { install?: string } } = JSON.parse(
