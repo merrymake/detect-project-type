@@ -1,8 +1,9 @@
 {
   "name": "@merrymake/detect-project-type",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,13 +14,16 @@
     "type": "git",
     "url": "git+https://github.com/mist-cloud-eu/project-type-detect.git"
   },
-  "dependencies": {},
   "bugs": {
     "url": "https://github.com/mist-cloud-eu/project-type-detect/issues"
   },
   "homepage": "https://github.com/mist-cloud-eu/project-type-detect#readme",
+  "dependencies": {
+    "strip-json-comments": "^5.0.1"
+  },
   "devDependencies": {
-    "@types/node": "^16.11.11"
+    "@types/node": "latest",
+    "@tsconfig/node-lts": "latest"
   },
   "publishConfig": {
     "access": "public"

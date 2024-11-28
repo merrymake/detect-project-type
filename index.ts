@@ -1,4 +1,5 @@
 import fs from "fs";
+import stripJsonComments from "strip-json-comments";
 export type ProjectType =
   | "docker"
   | "csharp"
@@ -14,7 +15,7 @@ export type ProjectType =
   | "clojure"
   | "rust";
 export function detectProjectType(folder: string): ProjectType {
-  let files = fs.readdirSync(folder);
+  const files = fs.readdirSync(folder);
   if (files.includes(`dockerfile`)) return "docker";
   if (files.includes(`tsconfig.json`)) return "typescript";
   if (files.includes(`package.json`)) return "nodejs";
@@ -43,14 +44,133 @@ export function detectProjectType(folder: string): ProjectType {
   throw `Unknown project type in ${folder}`;
 }
 
-function nodeJsRunCommand(folder: string) {
-  let pkg: { main?: string; scripts?: { start?: string } } = JSON.parse(
-    "" + fs.readFileSync(`${folder}/package.json`)
+function generateNewFileName(folder: string) {
+  let result: string;
+  do {
+    result = "f" + Math.random();
+  } while (fs.existsSync(`${folder}/${result}`));
+  return result;
+}
+
+function nodeJsBuild(typescript: boolean) {
+  return (folder: string) => {
+    const buildCommands: string[] = [];
+    if (
+      !fs.existsSync(`${folder}/node_modules`) ||
+      fs.statSync(`${folder}/node_modules`).mtimeMs <=
+        fs.statSync(`${folder}/package.json`).mtimeMs
+    )
+      buildCommands.push(
+        "NPM_CONFIG_UPDATE_NOTIFIER=false npm_config_loglevel=error npm --no-fund ci"
+      );
+    if (typescript) buildCommands.push("tsc");
+    const pkg: { scripts?: { install?: string } } = JSON.parse(
+      fs.readFileSync(`${folder}/package.json`, "utf-8")
+    );
+    const hasInstallScript = pkg.scripts?.install !== undefined;
+    if (hasInstallScript)
+      buildCommands.push(
+        "NPM_CONFIG_UPDATE_NOTIFIER=false npm_config_loglevel=error npm run install"
+      );
+    return buildCommands;
+  };
+}
+
+function gradleBuild(folder: string) {
+  const buildCommands: string[] = [];
+  buildCommands.push(`./gradlew install`);
+  return buildCommands;
+}
+
+function golangBuild(folder: string) {
+  const buildCommands: string[] = [];
+  buildCommands.push(
+    `CGO_ENABLED=0 go build -o app -ldflags="-extldflags=-static"`
   );
-  let cmd =
+  return buildCommands;
+}
+
+function rustBuild(folder: string) {
+  const buildCommands: string[] = [];
+  buildCommands.push(`cargo build --release`);
+  return buildCommands;
+}
+
+function csharpBuild(folder: string) {
+  const buildCommands: string[] = [];
+  buildCommands.push(
+    `dotnet build --nologo -v q --property WarningLevel=0 /clp:ErrorsOnly`
+  );
+  return buildCommands;
+}
+
+function pythonBuild(folder: string) {
+  const buildCommands: string[] = [];
+  if (
+    !fs.existsSync(`${folder}/merrymake-env`) ||
+    fs.statSync(`${folder}/merrymake-env`).mtimeMs <=
+      fs.statSync(`${folder}/requirements.txt`).mtimeMs
+  )
+    buildCommands.push(
+      `python3 -m venv merrymake-env && . merrymake-env/**/activate && pip install -r requirements.txt`
+    );
+  return buildCommands;
+}
+
+export const BUILD_SCRIPT_MAKERS: {
+  [projectType in ProjectType]: (folder: string) => string[];
+} = {
+  docker: () => {
+    throw "Custom dockerfiles are not supported";
+  },
+  nodejs: nodeJsBuild(false),
+  typescript: nodeJsBuild(true),
+  gradle: gradleBuild,
+  maven: () => {
+    throw "Maven support is coming soon";
+  },
+  python: pythonBuild,
+  php: () => {
+    throw "Php support is coming soon";
+  },
+  scala: () => {
+    throw "Scala support is coming soon";
+  },
+  clojure: () => {
+    throw "Clojure support is coming soon";
+  },
+  ruby: () => {
+    throw "Ruby support is coming soon";
+  },
+  csharp: csharpBuild,
+  rust: rustBuild,
+  go: golangBuild,
+};
+
+export function writeBuildScript(ptBuilder: (folder: string) => string[]) {
+  return (folder: string) => {
+    const cmds = ptBuilder(folder);
+    const fileName = generateNewFileName(folder);
+    fs.writeFileSync(`${folder}/${fileName}`, cmds.join("\n"));
+    return fileName;
+  };
+}
+
+function nodeJsRunCommand(folder: string) {
+  const out = fs.existsSync("tsconfig.json")
+    ? JSON.parse(
+        stripJsonComments(fs.readFileSync(`${folder}/tsconfig.json`, "utf-8"))
+      )?.compilerOptions?.outDir || ""
+    : "";
+  const pkg: { main?: string; scripts?: { start?: string } } = JSON.parse(
+    fs.readFileSync(`${folder}/package.json`, "utf-8")
+  );
+  const cmd =
     pkg.scripts?.start ||
-    (fs.existsSync(`${folder}/server.js`) && `node server.js`) ||
-    (fs.existsSync(`${folder}/app.js`) && `node app.js`) ||
+    (fs.existsSync(`${folder}/${out && out + "/"}server.js`) &&
+      `node ${out && out + "/"}server.js`) ||
+    (fs.existsSync(`${folder}/${out && out + "/"}app.js`) &&
+      `node ${out && out + "/"}app.js`) ||
     (pkg.main && `node ${pkg.main}`);
   if (cmd === undefined)
     throw `Missing scripts.start in: ${folder}/package.json`;
@@ -63,7 +183,7 @@ function gradleRunCommand(folder: string) {
   else if (fs.existsSync(`${folder}/app/build/install`))
     installDir = `/app/build/install`;
   else throw `Could not locate build/install folder`;
-  let gradleProjectName = fs.readdirSync(folder + installDir)[0];
+  const gradleProjectName = fs.readdirSync(folder + installDir)[0];
   if (gradleProjectName === undefined)
     throw `Missing executable: ${folder}${installDir}`;
   return `.${installDir}/${gradleProjectName}/bin/${gradleProjectName}`;
@@ -74,9 +194,9 @@ function golangRunCommand(folder: string) {
 }
 
 function csharpRunCommand(folder: string) {
-  let Debug_or_Release = fs.readdirSync(`${folder}/bin`)[0];
-  let arch = fs.readdirSync(`${folder}/bin/${Debug_or_Release}`)[0];
-  let executable = fs
+  const Debug_or_Release = fs.readdirSync(`${folder}/bin`)[0];
+  const arch = fs.readdirSync(`${folder}/bin/${Debug_or_Release}`)[0];
+  const executable = fs
     .readdirSync(`${folder}/bin/${Debug_or_Release}/${arch}`)
     .find((x) => !x.includes(".") || x.endsWith(".exe"));
   return `./bin/${Debug_or_Release}/${arch}/${executable}`;
@@ -91,8 +211,8 @@ function rustRunCommand(folder: string) {
 }
 
 function pythonRunCommand(folder: string) {
-  let appExists = fs.existsSync(`${folder}/app.py`);
-  let mainExists = fs.existsSync(`${folder}/main.py`);
+  const appExists = fs.existsSync(`${folder}/app.py`);
+  const mainExists = fs.existsSync(`${folder}/main.py`);
   let file: string;
   if (appExists && mainExists)
     throw `Cannot have both 'app.py' and 'main.py' in the root folder`;
@@ -135,108 +255,6 @@ export const RUN_COMMAND: {
   rust: rustRunCommand,
   go: golangRunCommand,
 };
-
-function generateNewFileName(folder: string) {
-  let result: string;
-  do {
-    result = "f" + Math.random();
-  } while (fs.existsSync(`${folder}/${result}`));
-  return result;
-}
-
-function nodeJsBuild(typescript: boolean) {
-  return (folder: string) => {
-    let buildCommands: string[] = [];
-    buildCommands.push(
-      "NPM_CONFIG_UPDATE_NOTIFIER=false npm_config_loglevel=error npm --no-fund ci"
-    );
-    if (typescript) buildCommands.push("tsc");
-    let pkg: { scripts?: { install?: string } } = JSON.parse(
-      "" + fs.readFileSync(`${folder}/package.json`)
-    );
-    let hasInstallScript = pkg.scripts?.install !== undefined;
-    if (hasInstallScript)
-      buildCommands.push(
-        "NPM_CONFIG_UPDATE_NOTIFIER=false npm_config_loglevel=error npm run install"
-      );
-    return buildCommands;
-  };
-}
-
-function gradleBuild(folder: string) {
-  let buildCommands: string[] = [];
-  buildCommands.push(`./gradlew install`);
-  return buildCommands;
-}
-
-function golangBuild(folder: string) {
-  let buildCommands: string[] = [];
-  buildCommands.push(
-    `CGO_ENABLED=0 go build -o app -ldflags="-extldflags=-static"`
-  );
-  return buildCommands;
-}
-
-function rustBuild(folder: string) {
-  let buildCommands: string[] = [];
-  buildCommands.push(`cargo build --release`);
-  return buildCommands;
-}
-
-function csharpBuild(folder: string) {
-  let buildCommands: string[] = [];
-  buildCommands.push(
-    `dotnet build --nologo -v q --property WarningLevel=0 /clp:ErrorsOnly`
-  );
-  return buildCommands;
-}
-
-function pythonBuild(folder: string) {
-  let buildCommands: string[] = [];
-  buildCommands.push(
-    `python3 -m venv merrymake-env && . merrymake-env/**/activate && pip install -r requirements.txt`
-  );
-  return buildCommands;
-}
-
-export const BUILD_SCRIPT_MAKERS: {
-  [projectType in ProjectType]: (folder: string) => string[];
-} = {
-  docker: () => {
-    throw "Custom dockerfiles are not supported";
-  },
-  nodejs: nodeJsBuild(false),
-  typescript: nodeJsBuild(true),
-  gradle: gradleBuild,
-  maven: () => {
-    throw "Maven support is coming soon";
-  },
-  python: pythonBuild,
-  php: () => {
-    throw "Php support is coming soon";
-  },
-  scala: () => {
-    throw "Scala support is coming soon";
-  },
-  clojure: () => {
-    throw "Clojure support is coming soon";
-  },
-  ruby: () => {
-    throw "Ruby support is coming soon";
-  },
-  csharp: csharpBuild,
-  rust: rustBuild,
-  go: golangBuild,
-};
-
-export function writeBuildScript(ptBuilder: (folder: string) => string[]) {
-  return (folder: string) => {
-    let cmds = ptBuilder(folder);
-    let fileName = generateNewFileName(folder);
-    fs.writeFileSync(`${folder}/${fileName}`, cmds.join("\n"));
-    return fileName;
-  };
-}
 
 export const VERSION_CMD: {
   [projectType in ProjectType]: { [tool: string]: string };
