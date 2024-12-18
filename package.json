@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/mist-cloud-eu/project-type-detect#readme",
   "dependencies": {
-    "strip-json-comments": "^5.0.1"
+    "strip-json-comments": "latest"
   },
   "devDependencies": {
     "@types/node": "latest",
