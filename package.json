@@ -1,6 +1,6 @@
 {
   "name": "@merrymake/detect-project-type",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "",
   "main": "index.js",
   "type": "module",
@@ -19,11 +19,12 @@
   },
   "homepage": "https://github.com/mist-cloud-eu/project-type-detect#readme",
   "dependencies": {
+    "@merrymake/utils": "^1.0.0",
     "strip-json-comments": "latest"
   },
   "devDependencies": {
-    "@types/node": "latest",
-    "@tsconfig/node-lts": "latest"
+    "@tsconfig/node-lts": "latest",
+    "@types/node": "latest"
   },
   "publishConfig": {
     "access": "public"

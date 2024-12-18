@@ -6,7 +6,8 @@ import { Gradle } from "./ProjectTypes/Gradle.js";
 import { NodeJS } from "./ProjectTypes/NodeJS.js";
 import { Python } from "./ProjectTypes/Python.js";
 import { Rust } from "./ProjectTypes/Rust.js";
-export const ProjectTypes = {
+import { valueType } from "@merrymake/utils";
+export const ProjectTypes = valueType()({
     nodejs: new NodeJS(false),
     typescript: new NodeJS(true),
     gradle: new Gradle(),
@@ -14,7 +15,7 @@ export const ProjectTypes = {
     rust: new Rust(),
     csharp: new CSharp(),
     python: new Python(),
-};
+});
 export async function detectProjectType(folder) {
     let files = await readdir(folder);
     if (files.includes(`dockerfile`))

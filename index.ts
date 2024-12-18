@@ -7,8 +7,9 @@ import { NodeJS } from "./ProjectTypes/NodeJS.js";
 import { ProjectType } from "./ProjectType.js";
 import { Python } from "./ProjectTypes/Python.js";
 import { Rust } from "./ProjectTypes/Rust.js";
+import { valueType } from "@merrymake/utils";
 
-export const ProjectTypes = {
+export const ProjectTypes = valueType<ProjectType>()({
   nodejs: new NodeJS(false),
   typescript: new NodeJS(true),
   gradle: new Gradle(),
@@ -16,7 +17,7 @@ export const ProjectTypes = {
   rust: new Rust(),
   csharp: new CSharp(),
   python: new Python(),
-} as const;
+});
 
 export async function detectProjectType(folder: string): Promise<ProjectType> {
   let files = await readdir(folder);
