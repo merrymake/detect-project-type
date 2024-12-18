@@ -1,6 +1,6 @@
 import { existsSync } from "fs";
 import { readdir } from "fs/promises";
-import { ProjectType } from "./ProjectType";
+import { ProjectType } from "../ProjectType.js";
 
 export class Gradle implements ProjectType {
   constructor() {}

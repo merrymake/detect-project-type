@@ -1,6 +1,4 @@
-import { existsSync } from "fs";
-import { readFile } from "fs/promises";
-import { ProjectType } from "./ProjectType";
+import { ProjectType } from "../ProjectType.js";
 
 export class Go implements ProjectType {
   constructor() {}

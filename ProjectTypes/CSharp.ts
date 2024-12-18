@@ -1,6 +1,5 @@
-import { existsSync } from "fs";
-import { readdir, readFile } from "fs/promises";
-import { ProjectType } from "./ProjectType";
+import { readdir } from "fs/promises";
+import { ProjectType } from "../ProjectType.js";
 
 export class CSharp implements ProjectType {
   constructor() {}

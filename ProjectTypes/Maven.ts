@@ -1,9 +1,9 @@
-import { ProjectType } from "./ProjectType";
+import { ProjectType } from "../ProjectType.js";
 
 export class Maven implements ProjectType {
   constructor() {}
   versionCommands() {
-    return { php: "--version" };
+    return { javac: "--version" };
   }
   async build(folder: string) {
     const buildCommands: string[] = [];

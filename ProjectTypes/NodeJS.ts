@@ -1,14 +1,16 @@
 import { existsSync } from "fs";
 import { readFile, stat } from "fs/promises";
-import { ProjectType } from "./ProjectType";
+import { ProjectType } from "../ProjectType.js";
 import stripJsonComments from "strip-json-comments";
 
 export class NodeJS implements ProjectType {
   constructor(private typescript: boolean) {}
   versionCommands() {
-    if (this.typescript === true)
-      return { tsc: "--version", npm: "--version", node: "--version" };
-    return { npm: "--version", node: "--version" };
+    return {
+      npm: "--version",
+      node: "--version",
+      tsc: this.typescript === true ? "--version" : undefined,
+    };
   }
   async build(folder: string) {
     const buildCommands: string[] = [];
@@ -47,12 +49,12 @@ export class NodeJS implements ProjectType {
       await readFile(`${folder}/package.json`, "utf-8")
     );
     const cmd =
-      pkg.scripts?.start ||
+      (pkg.scripts?.start && `NODE_ENV=production ${pkg.scripts?.start}`) ||
       (existsSync(`${folder}/${out && out + "/"}server.js`) &&
-        `node ${out && out + "/"}server.js`) ||
+        `NODE_ENV=production node ${out && out + "/"}server.js`) ||
       (existsSync(`${folder}/${out && out + "/"}app.js`) &&
-        `node ${out && out + "/"}app.js`) ||
-      (pkg.main && `node ${pkg.main}`);
+        `NODE_ENV=production node ${out && out + "/"}app.js`) ||
+      (pkg.main && `NODE_ENV=production node ${pkg.main}`);
     if (cmd === undefined)
       throw `Missing scripts.start in: ${folder}/package.json`;
     return cmd;

@@ -1,6 +1,6 @@
 import { existsSync } from "fs";
-import { ProjectType } from "./ProjectType";
 import { stat } from "fs/promises";
+import { ProjectType } from "../ProjectType.js";
 
 export class Python implements ProjectType {
   constructor() {}

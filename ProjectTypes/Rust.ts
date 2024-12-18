@@ -1,5 +1,5 @@
 import { existsSync } from "fs";
-import { ProjectType } from "./ProjectType";
+import { ProjectType } from "../ProjectType.js";
 
 export class Rust implements ProjectType {
   constructor() {}

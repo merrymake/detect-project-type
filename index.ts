@@ -1,12 +1,12 @@
-import { NodeJS } from "./NodeJS";
-import { Gradle } from "./Gradle";
-import { Go } from "./Go";
-import { Rust } from "./Rust";
-import { Python } from "./Python";
-import { CSharp } from "./CSharp";
-import { ProjectType } from "./ProjectType";
-import { readdir, writeFile } from "fs/promises";
 import { existsSync } from "fs";
+import { readdir, writeFile } from "fs/promises";
+import { CSharp } from "./ProjectTypes/CSharp.js";
+import { Go } from "./ProjectTypes/Go.js";
+import { Gradle } from "./ProjectTypes/Gradle.js";
+import { NodeJS } from "./ProjectTypes/NodeJS.js";
+import { ProjectType } from "./ProjectType.js";
+import { Python } from "./ProjectTypes/Python.js";
+import { Rust } from "./ProjectTypes/Rust.js";
 
 const nodejs = new NodeJS(false);
 const nodets = new NodeJS(true);
