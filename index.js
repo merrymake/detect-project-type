@@ -60,9 +60,9 @@ function generateNewFileName(folder) {
     } while (existsSync(`${folder}/${result}`));
     return result;
 }
-export function writeBuildScript(pt) {
+export function writeBuildScript(build) {
     return async (folder) => {
-        const cmds = await pt.build(folder);
+        const cmds = await build(folder);
         const fileName = generateNewFileName(folder);
         await writeFile(`${folder}/${fileName}`, cmds.join("\n"));
         return fileName;

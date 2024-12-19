@@ -62,9 +62,9 @@ function generateNewFileName(folder: string) {
   return result;
 }
 
-export function writeBuildScript(pt: ProjectType) {
+export function writeBuildScript(build: (folder: string) => Promise<string[]>) {
   return async (folder: string) => {
-    const cmds = await pt.build(folder);
+    const cmds = await build(folder);
     const fileName = generateNewFileName(folder);
     await writeFile(`${folder}/${fileName}`, cmds.join("\n"));
     return fileName;
