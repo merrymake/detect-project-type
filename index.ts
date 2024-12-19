@@ -13,24 +13,26 @@ export const ProjectTypes = valueType<ProjectType>()({
   nodejs: new NodeJS(false),
   typescript: new NodeJS(true),
   gradle: new Gradle(),
-  golang: new Go(),
+  go: new Go(),
   rust: new Rust(),
   csharp: new CSharp(),
   python: new Python(),
 });
 
-export async function detectProjectType(folder: string): Promise<ProjectType> {
+export async function detectProjectType(
+  folder: string
+): Promise<keyof typeof ProjectTypes> {
   let files = await readdir(folder);
   if (files.includes(`dockerfile`))
     throw "Custom dockerfiles are not supported";
-  if (files.includes(`tsconfig.json`)) return ProjectTypes.typescript;
-  if (files.includes(`package.json`)) return ProjectTypes.nodejs;
+  if (files.includes(`tsconfig.json`)) return "typescript";
+  if (files.includes(`package.json`)) return "nodejs";
   if (
     files.includes(`gradlew`) ||
     files.includes(`build.gradle`) ||
     files.includes(`settings.gradle`)
   )
-    return ProjectTypes.gradle;
+    return "gradle";
   if (files.includes(`pom.xml`)) throw "Maven support is coming soon";
   if (
     files.includes(`requirements.txt`) ||
@@ -40,14 +42,14 @@ export async function detectProjectType(folder: string): Promise<ProjectType> {
     files.includes(`app.py`) ||
     files.includes(`main.py`)
   )
-    return ProjectTypes.python;
+    return "python";
   if (files.includes(`composer.json`) || files.includes(`index.php`))
     throw "Php support is coming soon";
   if (files.includes(`Gemfile`)) throw "Ruby support is coming soon";
-  if (files.includes(`go.mod`)) return ProjectTypes.golang;
+  if (files.includes(`go.mod`)) return "go";
   if (files.includes(`project.clj`)) throw "Clojure support is coming soon";
-  if (files.includes(`Cargo.toml`)) return ProjectTypes.rust;
-  if (files.some((x) => x.endsWith(`.csproj`))) return ProjectTypes.csharp;
+  if (files.includes(`Cargo.toml`)) return "rust";
+  if (files.some((x) => x.endsWith(`.csproj`))) return "csharp";
   if (files.includes(`*.stb`)) throw "Scala support is coming soon";
   throw `Unknown project type in ${folder}`;
 }

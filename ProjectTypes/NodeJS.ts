@@ -3,6 +3,7 @@ import { readFile, stat } from "fs/promises";
 import { ProjectType } from "../ProjectType.js";
 import stripJsonComments from "strip-json-comments";
 
+const NPM = `NPM_CONFIG_UPDATE_NOTIFIER=false npm_config_loglevel=error npm --no-fund `;
 export class NodeJS implements ProjectType {
   constructor(private typescript: boolean) {}
   versionCommands() {
@@ -17,23 +18,15 @@ export class NodeJS implements ProjectType {
     if (
       !existsSync(`${folder}/node_modules`) ||
       (await stat(`${folder}/node_modules`)).mtimeMs <=
-        (await stat(`${folder}/package.json`)).mtimeMs
+        (await stat(`${folder}/package-lock.json`)).mtimeMs
     )
-      buildCommands.push(
-        "NPM_CONFIG_UPDATE_NOTIFIER=false npm_config_loglevel=error npm --no-fund ci"
-      );
+      buildCommands.push(NPM + "ci");
     if (this.typescript === true) buildCommands.push("tsc");
     let pkg: { scripts?: { install?: string } } = JSON.parse(
       await readFile(`${folder}/package.json`, "utf-8")
     );
     let hasInstallScript = pkg.scripts?.install !== undefined;
-    if (hasInstallScript)
-      buildCommands.push(
-        "NPM_CONFIG_UPDATE_NOTIFIER=false npm_config_loglevel=error npm run install"
-      );
-    buildCommands.push(
-      "NPM_CONFIG_UPDATE_NOTIFIER=false npm_config_loglevel=error npm prune --omit=dev"
-    );
+    if (hasInstallScript) buildCommands.push(NPM + "run install");
     return buildCommands;
   }
   async runCommand(folder: string) {
