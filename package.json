@@ -1,6 +1,6 @@
 {
   "name": "@merrymake/detect-project-type",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "",
   "main": "index.js",
   "type": "module",
@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/mist-cloud-eu/project-type-detect#readme",
   "dependencies": {
-    "@merrymake/utils": "^1.0.0",
+    "@merrymake/utils": "latest",
     "strip-json-comments": "latest"
   },
   "devDependencies": {
