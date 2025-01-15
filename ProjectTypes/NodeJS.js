@@ -16,7 +16,10 @@ export class NodeJS {
     }
     async build(folder) {
         const buildCommands = [];
-        if (!existsSync(`${folder}/node_modules`) ||
+        if (!existsSync(`${folder}/package-lock.json`)) {
+            buildCommands.push(NPM + "install");
+        }
+        else if (!existsSync(`${folder}/node_modules`) ||
             (await stat(`${folder}/node_modules`)).mtimeMs <=
                 (await stat(`${folder}/package-lock.json`)).mtimeMs)
             buildCommands.push(NPM + "ci");

@@ -15,7 +15,9 @@ export class NodeJS implements ProjectType {
   }
   async build(folder: string) {
     const buildCommands: string[] = [];
-    if (
+    if (!existsSync(`${folder}/package-lock.json`)) {
+      buildCommands.push(NPM + "install");
+    } else if (
       !existsSync(`${folder}/node_modules`) ||
       (await stat(`${folder}/node_modules`)).mtimeMs <=
         (await stat(`${folder}/package-lock.json`)).mtimeMs
