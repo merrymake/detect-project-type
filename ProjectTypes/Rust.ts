@@ -18,4 +18,10 @@ export class Rust implements ProjectType {
       return `./target/release/app.exe`;
     throw `Missing executable: /target/release/app`;
   }
+  async update(folder: string): Promise<string[]> {
+    throw "TODO";
+  }
+  async upgrade(folder: string): Promise<string[]> {
+    throw "TODO";
+  }
 }

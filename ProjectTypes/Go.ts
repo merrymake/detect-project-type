@@ -15,4 +15,10 @@ export class Go implements ProjectType {
   async runCommand(folder: string) {
     return `./app`;
   }
+  async update(folder: string): Promise<string[]> {
+    throw "TODO";
+  }
+  async upgrade(folder: string): Promise<string[]> {
+    throw "TODO";
+  }
 }

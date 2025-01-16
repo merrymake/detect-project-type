@@ -13,4 +13,10 @@ export class Maven implements ProjectType {
   async runCommand(folder: string) {
     return ``;
   }
+  async update(folder: string): Promise<string[]> {
+    throw "TODO";
+  }
+  async upgrade(folder: string): Promise<string[]> {
+    throw "TODO";
+  }
 }

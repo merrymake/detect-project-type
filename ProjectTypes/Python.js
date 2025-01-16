@@ -31,4 +31,10 @@ export class Python {
             return `PATH="$(pwd)/merrymake-env/Scripts:$PATH" python3 ${file}`;
         throw `Missing virtual environment: /merrymake-env`;
     }
+    async update(folder) {
+        throw "TODO";
+    }
+    async upgrade(folder) {
+        throw "TODO";
+    }
 }

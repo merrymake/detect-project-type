@@ -24,4 +24,10 @@ export class Gradle implements ProjectType {
       throw `Missing executable: ${folder}${installDir}`;
     return `.${installDir}/${gradleProjectName}/bin/${gradleProjectName}`;
   }
+  async update(folder: string): Promise<string[]> {
+    throw "TODO";
+  }
+  async upgrade(folder: string): Promise<string[]> {
+    throw "TODO";
+  }
 }

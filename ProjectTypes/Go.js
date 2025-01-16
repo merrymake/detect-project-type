@@ -11,4 +11,10 @@ export class Go {
     async runCommand(folder) {
         return `./app`;
     }
+    async update(folder) {
+        throw "TODO";
+    }
+    async upgrade(folder) {
+        throw "TODO";
+    }
 }

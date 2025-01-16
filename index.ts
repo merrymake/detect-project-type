@@ -3,12 +3,13 @@ import { readdir, writeFile } from "fs/promises";
 import { CSharp } from "./ProjectTypes/CSharp.js";
 import { Go } from "./ProjectTypes/Go.js";
 import { Gradle } from "./ProjectTypes/Gradle.js";
-import { NodeJS } from "./ProjectTypes/NodeJS.js";
+import { NodeJS, NPM } from "./ProjectTypes/NodeJS.js";
 import { ProjectType } from "./ProjectType.js";
 import { Python } from "./ProjectTypes/Python.js";
 import { Rust } from "./ProjectTypes/Rust.js";
 import { valueType } from "@merrymake/utils";
 
+export const NPM_COMMAND = NPM;
 export const ProjectTypes = valueType<ProjectType>()({
   nodejs: new NodeJS(false),
   typescript: new NodeJS(true),

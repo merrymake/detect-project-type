@@ -24,4 +24,10 @@ export class Gradle {
             throw `Missing executable: ${folder}${installDir}`;
         return `.${installDir}/${gradleProjectName}/bin/${gradleProjectName}`;
     }
+    async update(folder) {
+        throw "TODO";
+    }
+    async upgrade(folder) {
+        throw "TODO";
+    }
 }

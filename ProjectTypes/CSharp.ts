@@ -21,4 +21,10 @@ export class CSharp implements ProjectType {
     ).find((x) => !x.includes(".") || x.endsWith(".exe"));
     return `./bin/${Debug_or_Release}/${arch}/${executable}`;
   }
+  async update(folder: string): Promise<string[]> {
+    throw "TODO";
+  }
+  async upgrade(folder: string): Promise<string[]> {
+    throw "TODO";
+  }
 }

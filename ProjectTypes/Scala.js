@@ -11,4 +11,10 @@ export class Maven {
     async runCommand(folder) {
         return ``;
     }
+    async update(folder) {
+        throw "TODO";
+    }
+    async upgrade(folder) {
+        throw "TODO";
+    }
 }

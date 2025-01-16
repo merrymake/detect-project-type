@@ -34,4 +34,10 @@ export class Python implements ProjectType {
       return `PATH="$(pwd)/merrymake-env/Scripts:$PATH" python3 ${file}`;
     throw `Missing virtual environment: /merrymake-env`;
   }
+  async update(folder: string): Promise<string[]> {
+    throw "TODO";
+  }
+  async upgrade(folder: string): Promise<string[]> {
+    throw "TODO";
+  }
 }

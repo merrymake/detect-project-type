@@ -15,4 +15,10 @@ export class CSharp {
         const executable = (await readdir(`${folder}/bin/${Debug_or_Release}/${arch}`)).find((x) => !x.includes(".") || x.endsWith(".exe"));
         return `./bin/${Debug_or_Release}/${arch}/${executable}`;
     }
+    async update(folder) {
+        throw "TODO";
+    }
+    async upgrade(folder) {
+        throw "TODO";
+    }
 }

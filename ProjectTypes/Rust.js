@@ -16,4 +16,10 @@ export class Rust {
             return `./target/release/app.exe`;
         throw `Missing executable: /target/release/app`;
     }
+    async update(folder) {
+        throw "TODO";
+    }
+    async upgrade(folder) {
+        throw "TODO";
+    }
 }
