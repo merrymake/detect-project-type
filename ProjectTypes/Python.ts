@@ -15,7 +15,7 @@ export class Python implements ProjectType {
         (await stat(`${folder}/requirements.txt`)).mtimeMs
     )
       buildCommands.push(
-        `python3 -m venv merrymake-env && . merrymake-env/**/activate && pip install -r requirements.txt`
+        `python -m venv merrymake-env && . merrymake-env/**/activate && pip install -r requirements.txt`
       );
     return buildCommands;
   }
@@ -29,9 +29,9 @@ export class Python implements ProjectType {
     else if (mainExists) file = `main.py`;
     else throw `Missing 'app.py'`;
     if (existsSync(`${folder}/merrymake-env/bin`))
-      return `PATH="$(pwd)/merrymake-env/bin:$PATH" python3 ${file}`;
+      return `PATH="$(pwd)/merrymake-env/bin:$PATH" python ${file}`;
     else if (existsSync(`${folder}/merrymake-env/Scripts`))
-      return `PATH="$(pwd)/merrymake-env/Scripts:$PATH" python3 ${file}`;
+      return `PATH="$(pwd)/merrymake-env/Scripts:$PATH" python ${file}`;
     throw `Missing virtual environment: /merrymake-env`;
   }
   async update(folder: string): Promise<string[]> {

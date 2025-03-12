@@ -83,18 +83,22 @@ export class NodeJS implements ProjectType {
       await readFile(`${folder}/package.json`, "utf-8")
     );
     const commands: string[] = [];
-    const deps = this.getDependencies(pkg.dependencies, updateMajor);
-    if (deps.length > 0)
-      commands.push(
-        `echo "Updating ${deps.length} production dependencies..."`,
-        `${NPM} install --silent --save-exact ${deps.join(" ")}`
-      );
-    const devDeps = this.getDependencies(pkg.devDependencies, updateMajor);
-    if (devDeps.length > 0)
-      commands.push(
-        `echo "Updating ${devDeps.length} development dependencies..."`,
-        `${NPM} install --silent --save-dev --save-exact ${devDeps.join(" ")}`
-      );
+    {
+      const deps = this.getDependencies(pkg.dependencies, updateMajor);
+      if (deps.length > 0)
+        commands.push(
+          `echo "Updating ${deps.length} production dependencies..."`,
+          `${NPM} install --silent --save-exact ${deps.join(" ")}`
+        );
+    }
+    {
+      const devDeps = this.getDependencies(pkg.devDependencies, updateMajor);
+      if (devDeps.length > 0)
+        commands.push(
+          `echo "Updating ${devDeps.length} development dependencies..."`,
+          `${NPM} install --silent --save-dev --save-exact ${devDeps.join(" ")}`
+        );
+    }
     return commands;
   }
   async update(folder: string): Promise<string[]> {
