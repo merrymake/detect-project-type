@@ -3,7 +3,7 @@ import { stat } from "fs/promises";
 export class Python {
     constructor() { }
     versionCommands() {
-        return { python3: "--version", pip: "--version" };
+        return { python: "--version", pip: "--version" };
     }
     async build(folder) {
         const buildCommands = [];

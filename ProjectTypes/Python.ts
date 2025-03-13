@@ -5,7 +5,7 @@ import { ProjectType } from "../ProjectType.js";
 export class Python implements ProjectType {
   constructor() {}
   versionCommands() {
-    return { python3: "--version", pip: "--version" };
+    return { python: "--version", pip: "--version" };
   }
   async build(folder: string) {
     const buildCommands: string[] = [];
